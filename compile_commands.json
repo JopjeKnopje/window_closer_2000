@@ -330,9 +330,9 @@
         "output": ".pio/build/leonardo/libbc9/TMCStepper/source/bcm2835_stream.cpp.o"
     },
     {
-        "command": "/home/joppe/.platformio/packages/toolchain-atmelavr/bin/avr-gcc -o .pio/build/leonardo/src/main.c.o -c -std=gnu11 -fno-fat-lto-objects -mmcu=atmega32u4 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60118 -DARDUINO_AVR_LEONARDO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DUSB_VID=0x2341 -DUSB_PID=0x8036 \"-DUSB_PRODUCT=\\\"Arduino Leonardo\\\"\" -DUSB_MANUFACTURER=\\\"Arduino\\\" -Iinclude -Isrc -I.pio/libdeps/leonardo/TMCStepper/src -I/home/joppe/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -I/home/joppe/.platformio/packages/framework-arduino-avr/libraries/SPI/src -I/home/joppe/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/joppe/.platformio/packages/framework-arduino-avr/variants/leonardo src/main.c",
+        "command": "/home/joppe/.platformio/packages/toolchain-atmelavr/bin/avr-g++ -o .pio/build/leonardo/src/main.cpp.o -c -fno-exceptions -fno-threadsafe-statics -fpermissive -std=gnu++11 -mmcu=atmega32u4 -Os -Wall -ffunction-sections -fdata-sections -flto -DPLATFORMIO=60118 -DARDUINO_AVR_LEONARDO -DF_CPU=16000000L -DARDUINO_ARCH_AVR -DARDUINO=10808 -DUSB_VID=0x2341 -DUSB_PID=0x8036 \"-DUSB_PRODUCT=\\\"Arduino Leonardo\\\"\" -DUSB_MANUFACTURER=\\\"Arduino\\\" -Iinclude -Isrc -I.pio/libdeps/leonardo/TMCStepper/src -I/home/joppe/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src -I/home/joppe/.platformio/packages/framework-arduino-avr/libraries/SPI/src -I/home/joppe/.platformio/packages/framework-arduino-avr/cores/arduino -I/home/joppe/.platformio/packages/framework-arduino-avr/variants/leonardo src/main.cpp",
         "directory": "/home/joppe/Stuff/Programming/window_motor",
-        "file": "src/main.c",
-        "output": ".pio/build/leonardo/src/main.c.o"
+        "file": "src/main.cpp",
+        "output": ".pio/build/leonardo/src/main.cpp.o"
     }
 ]
