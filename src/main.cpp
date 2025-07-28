@@ -1,64 +1,63 @@
 #include <Arduino.h>
-#include <TMCStepper.h>
+#include <TMC2209.h>
 #include <avr/io.h>
 
-#define EN_PIN           10 // Enable
-#define DIR_PIN          16 // Direction
-#define STEP_PIN         14 // Step
-#define SW_RX            0 // TMC2208/TMC2224 SoftwareSerial receive pin
-#define SW_TX            1 // TMC2208/TMC2224 SoftwareSerial transmit pin
-#define SERIAL_PORT Serial // TMC2208/TMC2224 HardwareSerial port
-#define DRIVER_ADDRESS 0b00 // TMC2209 Driver address according to MS1 and MS2
+#define PIN_EN 10
+#define PIN_RX 8
+#define PIN_TX 9
 
-#define R_SENSE 0.11f // Match to your driver
-// SilentStepStick series use 0.11
-// UltiMachine Einsy and Archim2 boards use 0.2
-// Panucatt BSD2660 uses 0.1
-// Watterott TMC5160 uses 0.075
 
-// Select your stepper driver type
 
-TMC2209Stepper driver(&SERIAL_PORT, R_SENSE, DRIVER_ADDRESS);
-//TMC2209Stepper driver(SW_RX, SW_TX, R_SENSE, DRIVER_ADDRESS);
+// SoftwareSerial can be used on Arduino boards without HardwareSerial ports,
+// such as the Uno, Nano, and Mini.
+//
+// See this reference for more details:
+// https://www.arduino.cc/reference/en/language/functions/communication/serial/
 
-void setup() {
-	pinMode(EN_PIN, OUTPUT);
-	pinMode(STEP_PIN, OUTPUT);
-	pinMode(DIR_PIN, OUTPUT);
-	digitalWrite(EN_PIN, LOW);      // Enable driver in hardware
+// Software serial ports should only be used for unidirectional communication
+// The RX pin does not need to be connected, but it must be specified when
+// creating an instance of a SoftwareSerial object
+SoftwareSerial soft_serial(PIN_RX, PIN_TX);
 
-	// Enable one according to your setup
-	//SPI.begin();                    // SPI drivers
-	// SERIAL_PORT.begin(115200);      // HW UART drivers
-	driver.beginSerial(115200);     // SW UART drivers
+const int32_t RUN_VELOCITY = 20000;
+const int32_t STOP_VELOCITY = 0;
+const int RUN_DURATION = 2000;
+const int STOP_DURATION = 1000;
+// current values may need to be reduced to prevent overheating depending on
+// specific motor and power supply voltage
+const uint8_t RUN_CURRENT_PERCENT = 100;
 
-	driver.begin();                 //  SPI: Init CS pins and possible SW SPI pins
-	// UART: Init SW UART (if selected) with default 115200 baudrate
-	driver.toff(5);                 // Enables driver in software
-	driver.rms_current(600);        // Set motor RMS current
-	driver.microsteps(0);          // Set microsteps to 1/16th
 
-	//driver.en_pwm_mode(true);       // Toggle stealthChop on TMC2130/2160/5130/5160
-	//driver.en_spreadCycle(false);   // Toggle spreadCycle on TMC2208/2209/2224
-	driver.pwm_autoscale(true);     // Needed for stealthChop
+// Instantiate TMC2209
+TMC2209 stepper_driver;
+bool invert_direction = false;
+
+void setup()
+{
+	stepper_driver.setup(soft_serial);
+	stepper_driver.setHardwareEnablePin(PIN_EN);
+
+	stepper_driver.setRunCurrent(RUN_CURRENT_PERCENT);
+	stepper_driver.setStandstillMode(TMC2209::FREEWHEELING);
+	// stepper_driver.enableCoolStep();
+	stepper_driver.enable();
 }
-
-bool shaft = false;
 
 void loop()
 {
-
-	uint32_t speed = 300;
-	for (uint16_t i = 1000; i>0; i--)
+	stepper_driver.moveAtVelocity(STOP_VELOCITY);
+	delay(STOP_DURATION);
+	if (invert_direction)
 	{
-		digitalWrite(STEP_PIN, HIGH);
-		delayMicroseconds(speed / 2);
-		digitalWrite(STEP_PIN, LOW);
-		delayMicroseconds(speed / 2);
+		stepper_driver.enableInverseMotorDirection();
 	}
-	// Serial.print("shaft : ");
-	// Serial.println(shaft);
-	// shaft = !shaft;
-	// driver.shaft(shaft);
-	// digitalWrite(DIR_PIN, shaft);
+	else
+	{
+		stepper_driver.disableInverseMotorDirection();
+	}
+	invert_direction = not invert_direction;
+
+	stepper_driver.moveAtVelocity(RUN_VELOCITY);
+
+	delay(RUN_DURATION);
 }
